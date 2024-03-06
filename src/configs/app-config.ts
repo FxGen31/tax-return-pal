@@ -1,3 +1,4 @@
+// Application reusable configurations
 export const appConfig = {
     metadata: {
         title: 'Tax Return Pal',

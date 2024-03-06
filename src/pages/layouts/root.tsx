@@ -1,7 +1,8 @@
+import { Outlet } from 'react-router-dom';
 import Sidebar from '@/components/sidebar';
 import TitleBar from '@/components/title-bar';
-import { Outlet } from 'react-router-dom';
 
+// Application root layout  
 export default function RootLayout() {
     return (
         <div className='flex flex-col h-screen overflow-clip'>

@@ -2,6 +2,10 @@ import { Plus, Radar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AddRepositoryDialog from '@/components/add-repository-dialog';
 
+/**
+ * A component which gets rendered when there is no existing repository
+ * @returns {React.JSX.Element}
+ */
 export default function EmptyRepositoryPlaceholder() {
     return (
         <div className='flex h-[450px] shrink-0 items-center justify-center rounded-md border-2 border-dashed'>

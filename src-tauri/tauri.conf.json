@@ -36,7 +36,8 @@
                 "exists": true,
                 "scope": [
                     "$DOCUMENT/*",
-                    "$DOCUMENT/tax-return-pal/*"
+                    "$DOCUMENT/tax-return-pal/*",
+                    "$DOCUMENT/tax-return-pal/**"
                 ]
             }
         },

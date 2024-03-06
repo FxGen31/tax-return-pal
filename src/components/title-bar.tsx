@@ -1,4 +1,8 @@
 import { appWindow } from '@tauri-apps/api/window';
+import { Github, Maximize, Minus, Settings, X } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { NavLink } from 'react-router-dom';
 import {
     Menubar,
     MenubarContent,
@@ -14,12 +18,9 @@ import {
     MenubarSubTrigger,
     MenubarTrigger,
 } from '@/components/ui/menubar';
-import { Github, Maximize, Minus, Settings, X } from 'lucide-react';
 import ThemeToggler from '@/components/theme-toggler';
-import { useCallback, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { NavLink } from 'react-router-dom';
 
+// Application titlebar
 export default function TitleBar() {
     const [isHovering, setIsHovering] = useState(false);
 

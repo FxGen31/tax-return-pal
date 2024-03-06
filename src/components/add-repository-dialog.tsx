@@ -1,13 +1,16 @@
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import * as z from 'zod';
+import { cn } from '@/lib/utils';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { AppDispatch, useAppDispatch } from '@/redux/store';
+import { addRepository } from '@/redux/slices/repositories-slice';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/components/ui/use-toast';
 import {
     Form,
     FormControl,
@@ -17,25 +20,23 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
-import { Textarea } from '@/components/ui/textarea';
-import { AppDispatch, useAppDispatch } from '@/redux/store';
-import { addRepository } from '@/redux/slices/repositories-slice';
-import { useState } from 'react';
-import { toast } from '@/components/ui/use-toast';
 
+// Define form schema
 const addRepositoryformSchema = z.object({
     name: z
         .string()
@@ -52,8 +53,10 @@ const addRepositoryformSchema = z.object({
 
 type AddRepositoryFormValues = z.infer<typeof addRepositoryformSchema>;
 
+// Form default values
 const defaultValues: Partial<AddRepositoryFormValues> = {
     name: '',
+    // From 1st-July-current_year to 30th-June-next_year
     incomeYear: {
         from: new Date(new Date().getFullYear(), 6, 1),
         to: new Date(new Date().getFullYear() + 1, 5, 30),
@@ -61,20 +64,26 @@ const defaultValues: Partial<AddRepositoryFormValues> = {
     description: '',
 };
 
+/**
+ * A dialog which renders a form to add new repository
+ * @param {React.ReactNode} children - Trigger component for opening this form dialog  
+ * @returns {React.JSX.Element}
+ */
 export default function AddRepositoryDialog({
     children,
 }: React.PropsWithChildren) {
     const dispatch: AppDispatch = useAppDispatch();
-
     const [open, setOpen] = useState(false);
-
     const form = useForm<AddRepositoryFormValues>({
         resolver: zodResolver(addRepositoryformSchema),
         defaultValues,
     });
 
+    /**
+     * This function is invoked on form submission to add the new repository to the redux store and file system
+     * @param {AddRepositoryFormValues} data - repository details 
+     */
     async function onSubmit(data: AddRepositoryFormValues) {
-        console.log(data);
         dispatch(
             addRepository({
                 repository: {
@@ -90,7 +99,6 @@ export default function AddRepositoryDialog({
         )
             .unwrap()
             .then((promisedResult) => {
-                console.log(promisedResult);
                 toast({
                     title: 'Congratulation!',
                     description: `Your repository ${promisedResult.name} has been added.`,
@@ -98,7 +106,6 @@ export default function AddRepositoryDialog({
                 setOpen(false);
             })
             .catch((rejectedError) => {
-                console.log(rejectedError);
                 toast({
                     variant: 'destructive',
                     title: 'Uh oh! Something went wrong.',

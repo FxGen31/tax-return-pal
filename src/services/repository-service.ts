@@ -77,15 +77,16 @@ export class RepositoryService {
 
     // Add a repository
     public async addRepository(
-        repository: Repository
+        repository: Omit<Repository, 'id'>
     ): Promise<Repository | null> {
         try {
             // Generate a unique identifier
             const nanoid = customAlphabet('1234567890abcdef', 9);
+            const repositoryId = nanoid();
             // Append to repository name to prevent duplicated directory name
             const dirName = `${this.sanitizeDirName(
                 repository.name
-            )}_${nanoid()}`;
+            )}_${repositoryId}`;
 
             // Create a directory for the repository to hold assets
             createDir(`${this.appFolderName}/${dirName}`, {
@@ -94,14 +95,18 @@ export class RepositoryService {
             });
 
             // Update the repository details in the app configuration file
-            repository.path = `${this.appFolderName}/${dirName}`;
+            const newRepository: Repository = {
+                id: repositoryId,
+                ...repository,
+            };
+            newRepository.path = `${this.appFolderName}/${dirName}`;
 
             const textContent = await readTextFile(
                 `${this.appFolderName}/repositories.conf`,
                 { dir: BaseDirectory.Document }
             );
             const repositories: Repository[] = JSON.parse(textContent);
-            repositories.push(repository);
+            repositories.push(newRepository);
             await writeTextFile(
                 `${this.appFolderName}/repositories.conf`,
                 JSON.stringify(repositories),
@@ -111,18 +116,45 @@ export class RepositoryService {
                 }
             );
 
-            return repository;
+            // Create sub-directories for records
+            await writeTextFile(
+                `${this.appFolderName}/${dirName}/car-usage-logbook.json`,
+                '[]',
+                {
+                    dir: BaseDirectory.Document,
+                }
+            );
+            await writeTextFile(
+                `${this.appFolderName}/${dirName}/work-related-expense.json`,
+                '[]',
+                {
+                    dir: BaseDirectory.Document,
+                }
+            );
+            await writeTextFile(
+                `${this.appFolderName}/${dirName}/work-from-home-logbook.json`,
+                '[]',
+                {
+                    dir: BaseDirectory.Document,
+                }
+            );
+            await createDir(`${this.appFolderName}/${dirName}/invoices`, {
+                dir: BaseDirectory.Document,
+                recursive: true,
+            });
+
+            return newRepository;
         } catch (error) {
             return null;
         }
     }
 
     // Remove a repository
-    public async deleteRepository(name: string): Promise<Repository | null> {
+    public async deleteRepository(id: string): Promise<Repository | null> {
         try {
             let repositories = await this.getRepositories();
             const repository = repositories.find(
-                (repository) => repository.name == name
+                (repository) => repository.id == id
             );
             if (repository) {
                 // Remove the corresponding directory of the target repository
@@ -132,7 +164,7 @@ export class RepositoryService {
                 });
                 // Update the repositories in the app configuration file
                 repositories = repositories.filter(
-                    (repository) => repository.name !== name
+                    (repository) => repository.id !== id
                 );
                 await writeTextFile(
                     `${this.appFolderName}/repositories.conf`,

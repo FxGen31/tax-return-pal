@@ -8,6 +8,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+// Application sidebar containing all the navigation items
 export default function Sidebar({
     className,
     ...props

@@ -1,20 +1,25 @@
+import {
+    repositoriesStatus,
+    selectAllRepositories,
+} from '@/redux/slices/repositories-slice';
+import { useAppSelector } from '@/redux/store';
+import { Plus } from 'lucide-react';
 import AddRepositoryDialog from '@/components/add-repository-dialog';
 import EmptyRepositoryPlaceholder from '@/components/empty-repository-placeholder';
 import RepositoryList from '@/components/repository-list';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { selectAllRepositories } from '@/redux/slices/repositories-slice';
-import { useAppSelector } from '@/redux/store';
-import { Plus } from 'lucide-react';
-import { useEffect } from 'react';
+import HomeLoadingPage from '@/pages/home-loading';
+import HomeErrorPage from '@/pages/home-error';
 
+// Application homepage
 export default function HomePage() {
+    // Existing repositories
     const repositories = useAppSelector(selectAllRepositories);
+    const currentRepositoriesStatus = useAppSelector(repositoriesStatus);
 
-    useEffect(() => {
-        console.log(repositories);
-    }, [repositories]);
-
+    if (currentRepositoriesStatus === "loading") return <HomeLoadingPage />;
+    if (currentRepositoriesStatus === 'failed') return <HomeErrorPage />;
     return (
         <div className='ml-5 mr-8 mt-6 flex flex-col'>
             <div className='flex items-center justify-between'>

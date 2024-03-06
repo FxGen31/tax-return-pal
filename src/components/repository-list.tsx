@@ -1,3 +1,7 @@
+import { Repository } from '@/types';
+import { Link } from 'react-router-dom';
+import { AppDispatch, useAppDispatch } from '@/redux/store';
+import { deleteRepository } from '@/redux/slices/repositories-slice';
 import {
     Card,
     CardContent,
@@ -7,29 +11,33 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Repository } from '@/types';
 import { Separator } from '@/components/ui/separator';
-import { Link } from 'react-router-dom';
-import { AppDispatch, useAppDispatch } from '@/redux/store';
-import { deleteRepository } from '@/redux/slices/repositories-slice';
 import { toast } from '@/components/ui/use-toast';
 
 interface RepositoryListProps {
     repositories: Array<Repository>;
 }
 
+/**
+ * Display a list of existing repositories
+ * @param {Array<Repository>} repositories - A list of repositories
+ * @returns
+ */
 export default function RepositoryList({ repositories }: RepositoryListProps) {
     const dispatch: AppDispatch = useAppDispatch();
 
-    async function onDelete(name: string) {
+    /**
+     * This function is invoked to delete the selected repository from the redux store and file system
+     * @param {string} name - Name of the repository to be deleted
+     */
+    async function onDelete(id: string) {
         dispatch(
             deleteRepository({
-                name,
+                id,
             })
         )
             .unwrap()
             .then((promisedResult) => {
-                console.log(promisedResult);
                 toast({
                     title: 'Congratulation!',
                     description: `Your repository ${promisedResult.name} has been deleted.`,
@@ -70,14 +78,14 @@ export default function RepositoryList({ repositories }: RepositoryListProps) {
                         <Separator className='my-2' />
                         <CardFooter className='justify-end pb-2'>
                             <div className='flex space-x-2'>
-                                <Link to={`/file-explorer/${repository.name}`}>
+                                <Link to={`/${repository.id}`}>
                                     <Button variant='default'>Enter</Button>
                                 </Link>
 
                                 <Button
                                     variant='destructive'
                                     type='button'
-                                    onClick={() => onDelete(repository.name)}
+                                    onClick={() => onDelete(repository.id)}
                                 >
                                     Delete
                                 </Button>

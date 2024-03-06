@@ -1,7 +1,7 @@
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { ThemeProviderProps } from 'next-themes/dist/types';
 
-// Support dark theme
+// Support light/dark theme
 export default function ThemeProvider({
     children,
     ...props

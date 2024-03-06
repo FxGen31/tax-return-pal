@@ -12,6 +12,7 @@ interface SideNavItem {
     icon: LucideIcon;
 }
 
+// Application navigation items
 export const sideNavItems: SideNavItem[] = [
     {
         label: 'Home',
